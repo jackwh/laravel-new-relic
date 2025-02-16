@@ -250,7 +250,7 @@ class NewRelicTransactionHandler
                 app(NewRelicTransaction::class)->start(
                     config('new-relic.scheduler.prefix') .
                     ($scheduledTaskStarting->task->description ?: $this->parseTaskCommand(
-                        $scheduledTaskStarting->task->command
+                        $scheduledTaskStarting->task->command ?? 'unknown'
                     ))
                 )->addParameter(
                     'command',
