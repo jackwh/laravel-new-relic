@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.2.0 — Laravel 12 support - 2025-04-19
+
+### What's Changed
+
+* Bump aglipanci/laravel-pint-action from 2.0.0 to 2.3.1 by @dependabot in https://github.com/jackwh/laravel-new-relic/pull/20
+* Bump aglipanci/laravel-pint-action from 2.3.1 to 2.4 by @dependabot in https://github.com/jackwh/laravel-new-relic/pull/22
+* Laravel 12.x Compatibility by @laravel-shift in https://github.com/jackwh/laravel-new-relic/pull/25
+* Fix #15 missing fallback for the empty event name. by @arku31 in https://github.com/jackwh/laravel-new-relic/pull/24
+* Bump dependabot/fetch-metadata from 1.6.0 to 2.2.0 by @dependabot in https://github.com/jackwh/laravel-new-relic/pull/23
+
+### New Contributors
+
+* @laravel-shift made their first contribution in https://github.com/jackwh/laravel-new-relic/pull/25
+* @arku31 made their first contribution in https://github.com/jackwh/laravel-new-relic/pull/24
+
+**Full Changelog**: https://github.com/jackwh/laravel-new-relic/compare/v1.1.0...v1.2.0
+
 ## v1.1.0 — Laravel 11 support, improved standards - 2024-05-10
 
 ### What's Changed
