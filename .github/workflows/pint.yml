@@ -12,7 +12,7 @@ jobs:
         with:
           fetch-depth: 2
       - name: "laravel-pint"
-        uses: aglipanci/laravel-pint-action@2.5
+        uses: aglipanci/laravel-pint-action@2.6
         with:
           preset: psr12
           verboseMode: true
