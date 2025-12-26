@@ -182,7 +182,7 @@ class NewRelicTransactionHandler
      * @param \Illuminate\Contracts\Queue\Job $job
      * @return string
      */
-    private function resolveJobName(Job $job): string
+    protected function resolveJobName(Job $job): string
     {
         $jobName = '';
 
