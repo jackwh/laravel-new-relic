@@ -173,16 +173,6 @@ class NewRelicTransactionHandler
     /**
      * Resolve the job name for New Relic transaction naming.
      *
-     * Uses a cascading approach to find the best name, prioritizing backward compatibility:
-     * 1. resolveName() - Laravel's standard display name method, honors custom displayName()
-     *    and provides better names for closures/mailables
-     * 2. getName() - raw job name from payload
-     * 3. resolveQueuedJobClass() - safety net when displayName is empty (fixes the bug)
-     * 4. 'Unknown Job [queue-name]' - final fallback to prevent empty transaction names
-     *
-     * This order preserves backward compatibility by respecting Laravel's intended design
-     * where displayName() is the primary source, while still fixing the empty name bug.
-     *
      * @param \Illuminate\Contracts\Queue\Job $job
      * @return string
      */
