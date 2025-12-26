@@ -173,11 +173,15 @@ class NewRelicTransactionHandler
     /**
      * Resolve the job name for New Relic transaction naming.
      *
-     * Uses a cascading approach to get the most accurate job name:
-     * 1. resolveQueuedJobClass() - gets actual class from payload['data']['commandName']
-     * 2. resolveName() - gets displayName or falls back to payload['job']
-     * 3. getName() - falls back to payload['job']
+     * Uses a cascading approach to find the best name, prioritizing backward compatibility:
+     * 1. resolveName() - Laravel's standard display name method, honors custom displayName()
+     *    and provides better names for closures/mailables
+     * 2. getName() - raw job name from payload
+     * 3. resolveQueuedJobClass() - safety net when displayName is empty (fixes the bug)
      * 4. 'Unknown Job [queue-name]' - final fallback to prevent empty transaction names
+     *
+     * This order preserves backward compatibility by respecting Laravel's intended design
+     * where displayName() is the primary source, while still fixing the empty name bug.
      *
      * @param \Illuminate\Contracts\Queue\Job $job
      * @return string
@@ -186,19 +190,19 @@ class NewRelicTransactionHandler
     {
         $jobName = '';
 
-        // Try to get the actual job class from the payload
-        if (method_exists($job, 'resolveQueuedJobClass')) {
-            $jobName = $job->resolveQueuedJobClass();
-        }
-
-        // Fall back to the display name or job handler
-        if (empty($jobName) && method_exists($job, 'resolveName')) {
+        // Primary: Use Laravel's standard display name (honors custom displayName)
+        if (method_exists($job, 'resolveName')) {
             $jobName = $job->resolveName();
         }
 
-        // Fall back to the raw job name from payload
+        // Secondary: Fall back to the raw job name from payload
         if (empty($jobName)) {
             $jobName = $job->getName();
+        }
+
+        // Tertiary: Use the actual job class from payload as safety net for empty displayName
+        if (empty($jobName) && method_exists($job, 'resolveQueuedJobClass')) {
+            $jobName = $job->resolveQueuedJobClass();
         }
 
         // Final fallback to prevent empty transaction names in New Relic

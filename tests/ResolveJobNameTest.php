@@ -119,21 +119,21 @@ abstract class BaseJobStub implements Job
     }
 }
 
-it('resolves job name from resolveQueuedJobClass when available', function (): void {
+it('resolves job name from resolveName when available', function (): void {
     $handler = createTestHandler();
 
     $job = new class extends BaseJobStub {
-        public function resolveQueuedJobClass(): string
+        public function resolveName(): string
         {
             return 'App\Jobs\ProcessPayment';
         }
 
-        public function resolveName(): string
+        public function getName(): string
         {
             return 'Should Not Be Called';
         }
 
-        public function getName(): string
+        public function resolveQueuedJobClass(): string
         {
             return 'Should Not Be Called';
         }
@@ -147,21 +147,21 @@ it('resolves job name from resolveQueuedJobClass when available', function (): v
     expect($handler->testResolveJobName($job))->toBe('App\Jobs\ProcessPayment');
 });
 
-it('falls back to resolveName when resolveQueuedJobClass returns empty', function (): void {
+it('falls back to getName when resolveName returns empty', function (): void {
     $handler = createTestHandler();
 
     $job = new class extends BaseJobStub {
-        public function resolveQueuedJobClass(): string
+        public function resolveName(): string
         {
             return '';
         }
 
-        public function resolveName(): string
+        public function getName(): string
         {
             return 'App\Jobs\SendEmail';
         }
 
-        public function getName(): string
+        public function resolveQueuedJobClass(): string
         {
             return 'Should Not Be Called';
         }
@@ -175,15 +175,10 @@ it('falls back to resolveName when resolveQueuedJobClass returns empty', functio
     expect($handler->testResolveJobName($job))->toBe('App\Jobs\SendEmail');
 });
 
-it('falls back to getName when both resolveQueuedJobClass and resolveName return empty', function (): void {
+it('falls back to resolveQueuedJobClass when both resolveName and getName return empty', function (): void {
     $handler = createTestHandler();
 
     $job = new class extends BaseJobStub {
-        public function resolveQueuedJobClass(): string
-        {
-            return '';
-        }
-
         public function resolveName(): string
         {
             return '';
@@ -191,7 +186,12 @@ it('falls back to getName when both resolveQueuedJobClass and resolveName return
 
         public function getName(): string
         {
-            return 'SomeStringBasedJob';
+            return '';
+        }
+
+        public function resolveQueuedJobClass(): string
+        {
+            return 'App\Jobs\ExtractedFromPayload';
         }
 
         public function getQueue(): string
@@ -200,24 +200,24 @@ it('falls back to getName when both resolveQueuedJobClass and resolveName return
         }
     };
 
-    expect($handler->testResolveJobName($job))->toBe('SomeStringBasedJob');
+    expect($handler->testResolveJobName($job))->toBe('App\Jobs\ExtractedFromPayload');
 });
 
 it('returns Unknown Job with queue name when all resolution methods return empty', function (): void {
     $handler = createTestHandler();
 
     $job = new class extends BaseJobStub {
-        public function resolveQueuedJobClass(): string
-        {
-            return '';
-        }
-
         public function resolveName(): string
         {
             return '';
         }
 
         public function getName(): string
+        {
+            return '';
+        }
+
+        public function resolveQueuedJobClass(): string
         {
             return '';
         }
@@ -255,23 +255,23 @@ it('handles job without resolveQueuedJobClass method', function (): void {
     expect($handler->testResolveJobName($job))->toBe('CustomJobName');
 });
 
-it('prioritizes resolveQueuedJobClass over resolveName', function (): void {
+it('prioritizes resolveName over getName and resolveQueuedJobClass', function (): void {
     $handler = createTestHandler();
 
     $job = new class extends BaseJobStub {
-        public function resolveQueuedJobClass(): string
-        {
-            return 'App\Jobs\ActualJobClass';
-        }
-
         public function resolveName(): string
         {
-            throw new \RuntimeException('resolveName should not be called when resolveQueuedJobClass returns a value');
+            return 'App\Jobs\CustomDisplayName';
         }
 
         public function getName(): string
         {
-            throw new \RuntimeException('getName should not be called when resolveQueuedJobClass returns a value');
+            throw new \RuntimeException('getName should not be called when resolveName returns a value');
+        }
+
+        public function resolveQueuedJobClass(): string
+        {
+            throw new \RuntimeException('resolveQueuedJobClass should not be called when resolveName returns a value');
         }
 
         public function getQueue(): string
@@ -280,24 +280,24 @@ it('prioritizes resolveQueuedJobClass over resolveName', function (): void {
         }
     };
 
-    expect($handler->testResolveJobName($job))->toBe('App\Jobs\ActualJobClass');
+    expect($handler->testResolveJobName($job))->toBe('App\Jobs\CustomDisplayName');
 });
 
 it('handles different queue names in fallback', function (): void {
     $handler = createTestHandler();
 
     $job = new class extends BaseJobStub {
-        public function resolveQueuedJobClass(): string
-        {
-            return '';
-        }
-
         public function resolveName(): string
         {
             return '';
         }
 
         public function getName(): string
+        {
+            return '';
+        }
+
+        public function resolveQueuedJobClass(): string
         {
             return '';
         }
