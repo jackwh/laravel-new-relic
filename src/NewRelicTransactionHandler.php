@@ -122,12 +122,8 @@ class NewRelicTransactionHandler
 
                 // Start a new transaction for this job
                 app(NewRelicTransaction::class)
-                    ->start(
-                        config('new-relic.queue.prefix') .
-                        ((method_exists($jobProcessing->job, 'resolveName'))
-                            ? $jobProcessing->job->resolveName()
-                            : $jobProcessing->job->getName())
-                    )->addParameter('queue', $jobProcessing->job->getQueue())
+                    ->start(config('new-relic.queue.prefix') . $this->resolveJobName($jobProcessing->job))
+                    ->addParameter('queue', $jobProcessing->job->getQueue())
                     ->addParameter(
                         'connection',
                         $jobProcessing->connectionName
@@ -172,6 +168,45 @@ class NewRelicTransactionHandler
             config('new-relic.queue.ignore.jobs'),
             $job::class
         );
+    }
+
+    /**
+     * Resolve the job name for New Relic transaction naming.
+     *
+     * Uses a cascading approach to get the most accurate job name:
+     * 1. resolveQueuedJobClass() - gets actual class from payload['data']['commandName']
+     * 2. resolveName() - gets displayName or falls back to payload['job']
+     * 3. getName() - falls back to payload['job']
+     * 4. 'Unknown Job [queue-name]' - final fallback to prevent empty transaction names
+     *
+     * @param \Illuminate\Contracts\Queue\Job $job
+     * @return string
+     */
+    private function resolveJobName(Job $job): string
+    {
+        $jobName = '';
+
+        // Try to get the actual job class from the payload
+        if (method_exists($job, 'resolveQueuedJobClass')) {
+            $jobName = $job->resolveQueuedJobClass();
+        }
+
+        // Fall back to the display name or job handler
+        if (empty($jobName) && method_exists($job, 'resolveName')) {
+            $jobName = $job->resolveName();
+        }
+
+        // Fall back to the raw job name from payload
+        if (empty($jobName)) {
+            $jobName = $job->getName();
+        }
+
+        // Final fallback to prevent empty transaction names in New Relic
+        if (empty($jobName)) {
+            $jobName = 'Unknown Job [' . $job->getQueue() . ']';
+        }
+
+        return $jobName;
     }
 
     /**
