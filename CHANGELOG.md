@@ -1,5 +1,28 @@
 # Changelog
 
+## v1.3.0 — Laravel 13 support - 2026-03-27
+
+### What's Changed
+
+* Bump dependabot/fetch-metadata from 2.2.0 to 2.3.0 by @dependabot[bot] in https://github.com/jackwh/laravel-new-relic/pull/26
+* Bump aglipanci/laravel-pint-action from 2.4 to 2.5 by @dependabot[bot] in https://github.com/jackwh/laravel-new-relic/pull/27
+* Bump dependabot/fetch-metadata from 2.3.0 to 2.4.0 by @dependabot[bot] in https://github.com/jackwh/laravel-new-relic/pull/28
+* Bump aglipanci/laravel-pint-action from 2.5 to 2.6 by @dependabot[bot] in https://github.com/jackwh/laravel-new-relic/pull/30
+* Bump dependabot/fetch-metadata from 2.4.0 to 2.5.0 by @dependabot[bot] in https://github.com/jackwh/laravel-new-relic/pull/36
+* bug: Remove ISSUE_TEMPLATE/config.yml by @swarrenwecareconnectorg in https://github.com/jackwh/laravel-new-relic/pull/32
+* Laravel 13.x Compatibility by @laravel-shift in https://github.com/jackwh/laravel-new-relic/pull/37
+* Bump ramsey/composer-install from 3 to 4 by @dependabot[bot] in https://github.com/jackwh/laravel-new-relic/pull/38
+* Bump actions/checkout from 3 to 6 by @dependabot[bot] in https://github.com/jackwh/laravel-new-relic/pull/34
+* Bump stefanzweifel/git-auto-commit-action from 4 to 7 by @dependabot[bot] in https://github.com/jackwh/laravel-new-relic/pull/33
+* Support Laravel 13, update dependencies, drop support for Laravel 9 by @jackwh in https://github.com/jackwh/laravel-new-relic/pull/39
+
+### New Contributors
+
+* @swarrenwecareconnectorg made their first contribution in https://github.com/jackwh/laravel-new-relic/pull/32
+* @jackwh made their first contribution in https://github.com/jackwh/laravel-new-relic/pull/39
+
+**Full Changelog**: https://github.com/jackwh/laravel-new-relic/compare/v1.2.0...v1.3.0
+
 ## v1.2.0 — Laravel 12 support - 2025-04-19
 
 ### What's Changed
