@@ -20,15 +20,15 @@
     ],
     "require": {
         "php": "^8.1",
-        "illuminate/contracts": "^10.0|^11.0|^12.0|^13.0",
-        "illuminate/support": "^10.0|^11.0|^12.0|^13.0"
+        "illuminate/contracts": "^11.0|^12.0|^13.0",
+        "illuminate/support": "^11.0|^12.0|^13.0"
     },
     "require-dev": {
         "driftingly/rector-laravel": "^1.2|^2.0",
         "larastan/larastan": "^2.9.0|^3.9.3",
         "laravel/pint": "^1.15",
         "nunomaduro/collision": "^6.0|^8.0",
-        "orchestra/testbench": "^7.0|^9.0|^10.0|^11.0",
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
         "pestphp/pest": "^1.21|^2.34|^3.7|^4.4",
         "pestphp/pest-plugin-laravel": "^1.1|^2.3|^3.1|^4.1",
         "phpstan/extension-installer": "^1.1",
