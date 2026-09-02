@@ -88,6 +88,8 @@ class NewRelicMiddleware
 
     /**
      * An array of routes where this middleware shouldn't be applied.
+     *
+     * @return array<int, string>
      */
     protected function ignoredRoutes(): array
     {
@@ -98,6 +100,8 @@ class NewRelicMiddleware
 
     /**
      * Rewrite any custom transaction names, by path => name.
+     *
+     * @return array<string, string>
      */
     protected function mapCustomTransactionNames(): array
     {

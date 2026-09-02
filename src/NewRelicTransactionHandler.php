@@ -123,12 +123,8 @@ class NewRelicTransactionHandler
 
                 // Start a new transaction for this job
                 app(NewRelicTransaction::class)
-                    ->start(
-                        config('new-relic.queue.prefix') .
-                        ((method_exists($jobProcessing->job, 'resolveName'))
-                            ? $jobProcessing->job->resolveName()
-                            : $jobProcessing->job->getName())
-                    )->addParameter('queue', $jobProcessing->job->getQueue())
+                    ->start(config('new-relic.queue.prefix') . $jobProcessing->job->resolveName())
+                    ->addParameter('queue', $jobProcessing->job->getQueue())
                     ->addParameter(
                         'connection',
                         $jobProcessing->connectionName
@@ -315,6 +311,8 @@ class NewRelicTransactionHandler
 
     /**
      * Get any command arguments passed in to the current request.
+     *
+     * @return array<int, string>
      */
     protected function getCommandArgs(): array
     {

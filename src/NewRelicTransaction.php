@@ -15,6 +15,7 @@ class NewRelicTransaction
 
     public string $name = 'transaction';
 
+    /** @var array<string, int|float|string> */
     public array $parameters = [];
 
     public bool $isBackground = false;
