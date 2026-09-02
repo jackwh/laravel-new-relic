@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.4.0 — Ensure Transactions End Reliably - 2026-09-02
+
+### What's Changed
+
+* End queue transactions on `JobAttempted`, not `JobProcessed` by @alies-dev in https://github.com/jackwh/laravel-new-relic/pull/44
+* Bump dependabot/fetch-metadata from 2.5.0 to 3.1.0 by @dependabot[bot] in https://github.com/jackwh/laravel-new-relic/pull/41
+* Bump actions/checkout from 6 to 7 by @dependabot[bot] in https://github.com/jackwh/laravel-new-relic/pull/42
+* Drop support for Laravel 10 (EOL)
+
+### New Contributors
+
+* @alies-dev made their first contribution in https://github.com/jackwh/laravel-new-relic/pull/44
+
+**Full Changelog**: https://github.com/jackwh/laravel-new-relic/compare/v1.3.0...v1.4.0
+
 ## v1.3.0 — Laravel 13 support - 2026-03-27
 
 ### What's Changed
