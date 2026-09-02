@@ -11,8 +11,9 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Contracts\Queue\Job;
-use Illuminate\Queue\Events\JobProcessed;
+use Illuminate\Queue\Events\JobAttempted;
 use Illuminate\Queue\Events\JobProcessing;
+use Illuminate\Queue\Events\JobTimedOut;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -136,10 +137,33 @@ class NewRelicTransactionHandler
         );
 
         /**
-         * After each job finishes processing, end the previous transaction.
+         * `JobAttempted` fires from a `finally` block in `Worker::process()`, so unlike
+         * `JobProcessed` it also covers the exception, release, and max-attempts paths.
+         * Without this, a failed job's transaction stays open until the next job on
+         * that queue starts, and its recorded duration includes the worker's idle time.
          */
-        app('queue')->after(
-            static function (/*JobProcessed $jobProcessed*/): void {
+        app('events')->listen(
+            JobAttempted::class,
+            static function (JobAttempted $jobAttempted): void {
+                if ($jobAttempted->exception !== null) {
+                    newrelic_notice_error(
+                        $jobAttempted->exception->getMessage(),
+                        $jobAttempted->exception
+                    );
+                }
+
+                app(NewRelicTransaction::class)->end();
+            }
+        );
+
+        /**
+         * `Worker::kill()` sends `SIGKILL` right after this event, which runs no
+         * shutdown functions, so the transaction has to be closed here or it is
+         * never sent to the daemon.
+         */
+        app('events')->listen(
+            JobTimedOut::class,
+            static function (): void {
                 app(NewRelicTransaction::class)->end();
             }
         );
