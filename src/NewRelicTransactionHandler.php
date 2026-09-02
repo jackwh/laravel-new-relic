@@ -141,7 +141,8 @@ class NewRelicTransactionHandler
         app('events')->listen(
             JobAttempted::class,
             static function (JobAttempted $jobAttempted): void {
-                if ($jobAttempted->exception !== null) {
+                // JobAttempted's $exception property is available from Laravel 13 onwards:
+                if (isset($jobAttempted->exception)) {
                     newrelic_notice_error(
                         $jobAttempted->exception->getMessage(),
                         $jobAttempted->exception
