@@ -69,13 +69,15 @@ class NewRelicTransaction
     }
 
     /**
-     * Set the name for this transaction.
+     * Set the name for this transaction. The agent rejects an empty name, which
+     * is what the root path "/" trims to before the route is resolved, so that
+     * one is skipped and the middleware names the transaction after routing.
      */
     public function setName(string $name): self
     {
         $name = trim($name, '/ ');
 
-        if ($this->name === $name || $this->isActive($name)) {
+        if ($name === '' || $this->name === $name || $this->isActive($name)) {
             return $this;
         }
 

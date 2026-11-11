@@ -99,6 +99,10 @@ We've set some sensible `ignore` rules by default, feel free to adjust as requir
 #### Queue Handling
 ```php
 'queue'        => [
+    'record_transactions' => true,
+
+    // ...
+
     'ignore' => [
         'connections' => ['sync'],
         'queues'      => [],
@@ -108,6 +112,8 @@ We've set some sensible `ignore` rules by default, feel free to adjust as requir
 ```
 
 By default the `sync` connection will be ignored. This means a new job starting on this queue won't interrupt the existing transaction that started at the beginning of the request. You can also filter out specific queues and jobs, too.
+
+The New Relic PHP agent instruments Laravel queue workers itself: it opens, names and closes a transaction for every job. The package's own per-job transactions collide with that, and with agent 12.12 every log record written inside a job is lost. Set `record_transactions` to `false` to leave job transactions to the agent, and remove `queue:work` and `horizon:work` from `artisan.ignore`, because the agent only records jobs inside a transaction that is not ignored. The package then only closes the transaction of a timed-out job (the worker is killed with `SIGKILL`) and ignores the worker's idle time once it stops.
 
 ## Deployments
 
