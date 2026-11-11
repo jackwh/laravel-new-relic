@@ -14,6 +14,7 @@ use Illuminate\Contracts\Queue\Job;
 use Illuminate\Queue\Events\JobAttempted;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\Events\JobTimedOut;
+use Illuminate\Queue\Events\WorkerStopping;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -106,6 +107,12 @@ class NewRelicTransactionHandler
      */
     public function queueHandling(): void
     {
+        if (! config('new-relic.queue.record_transactions', true)) {
+            $this->agentQueueHandling();
+
+            return;
+        }
+
         /**
          * Before each job begins processing, start a new transaction.
          */
@@ -162,6 +169,40 @@ class NewRelicTransactionHandler
             JobTimedOut::class,
             static function (): void {
                 app(NewRelicTransaction::class)->end();
+            }
+        );
+    }
+
+    /**
+     * Leave job transactions to the New Relic agent's own Laravel queue
+     * instrumentation, and cover the two cases it misses.
+     */
+    public function agentQueueHandling(): void
+    {
+        /**
+         * `Worker::kill()` sends `SIGKILL` right after this event, so the agent
+         * never sends the job's transaction. Registered once the application has
+         * booted, so that application listeners (e.g. one logging the timeout)
+         * still write into the transaction before it is closed.
+         */
+        app()->booted(static function (): void {
+            app('events')->listen(
+                JobTimedOut::class,
+                static function (): void {
+                    newrelic_end_transaction();
+                }
+            );
+        });
+
+        /**
+         * After each job the agent starts a transaction that only keeps its
+         * hooks alive until the next job. Ignore the last one, or the worker's
+         * idle time is recorded as one long transaction when it exits.
+         */
+        app('events')->listen(
+            WorkerStopping::class,
+            static function (): void {
+                newrelic_ignore_transaction();
             }
         );
     }

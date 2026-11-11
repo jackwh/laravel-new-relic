@@ -156,6 +156,17 @@ return [
     | Queue Handling
     |--------------------------------------------------------------------------
     |
+    | record_transactions: Whether the package starts and ends a transaction
+    |           around each queued job. The New Relic PHP agent has its own
+    |           Laravel queue instrumentation that does the same, and the two
+    |           collide: with agent 12.12, log records written inside jobs
+    |           are lost. Set this to false to leave job transactions to the
+    |           agent. Then also remove `queue:work` and `horizon:work` from
+    |           'artisan.ignore', because the agent only records jobs inside
+    |           a transaction that is not ignored. The package still closes
+    |           the transaction of a timed-out job and ignores the worker's
+    |           idle time once it stops.
+    |
     | prefix:   Queued jobs will be identified in New Relic by calling the
     |           \Illuminate\Queue\Jobs\Job->resolveName() method, or if
     |           unavailable, using Illuminate\Queue\Jobs\Job->getName().
@@ -167,6 +178,8 @@ return [
     |
     */
     'queue' => [
+        'record_transactions' => true,
+
         'prefix' => '',
 
         'ignore' => [
